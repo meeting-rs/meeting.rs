@@ -11,14 +11,14 @@ use axum::{
     routing::get,
     Router,
 };
-use db::DbDropGuard;
+use db::DbHolder;
 use futures_util::{SinkExt, StreamExt};
 use tokio::sync::mpsc;
 use tracing::{debug, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 struct AppState {
-    db_holder: DbDropGuard,
+    db_holder: DbHolder,
 }
 
 #[tokio::main]
@@ -31,7 +31,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let db_holder = DbDropGuard::new();
+    let db_holder = DbHolder::new();
     let app_state = AppState { db_holder };
 
     let app = Router::new()
@@ -58,7 +58,7 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let (mut sender, mut receiver) = stream.split();
 
     let (tx, mut rx) = mpsc::channel(100);
-    tokio::spawn(async move {
+    let mut send_task = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             sender.send(msg).await.unwrap();
         }
@@ -84,7 +84,7 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let db = state.db_holder.db();
 
     // Determine a role, initiator or responder.
-    let role = match db.set_nx(passphrase.clone(), String::from(""), None) {
+    let role = match db.set_nx(passphrase.clone(), String::from("")) {
         1 => Role::Initiator,
         _ => Role::Responder,
     };
@@ -93,28 +93,30 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let channel_for_role = channel_name(passphrase.clone(), &role);
     let channel_for_opposite_role = channel_name(passphrase.clone(), &role.opposite());
 
+    // Exchange messages between initiator and responder.
     let tx2 = tx.clone();
-    let mut subscriber = db.subscribe(channel_for_opposite_role);
-    tokio::spawn(async move {
+    let mut subscriber = db.subscribe(channel_for_opposite_role.clone());
+    let subscribe_task = tokio::spawn(async move {
         while let Ok(msg) = subscriber.recv().await {
-            tx2.send(Message::Text(msg)).await.unwrap();
+            let _ = tx2.send(Message::Text(msg)).await;
         }
     });
 
     let db2 = db.clone();
-    tokio::spawn(async move {
+    let channel_for_role2 = channel_for_role.clone();
+    let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(Message::Text(msg))) = receiver.next().await {
-            if db2.publish(&channel_for_role, msg) == 0 {
+            if db2.publish(&channel_for_role2, msg) == 0 {
                 warn!("Publish not successful.");
             }
         }
     });
 
+    // Signal coordination.
     let notification_channel_name = [&passphrase, "notification"].join(":");
     match role {
         Role::Initiator => {
-            let _ = db.subscribe(notification_channel_name).recv().await;
-            tx.send(Message::Text(role.to_string())).await.unwrap();
+            let _ = db.subscribe(notification_channel_name.clone()).recv().await;
         }
         Role::Responder => {
             if db.publish(&notification_channel_name, String::from("")) == 0 {
@@ -122,6 +124,30 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
             }
         }
     }
+    let _ = tx.send(Message::Text(role.to_string())).await;
+
+    // If any one of the tasks run to completion, we abort the other.
+    tokio::select! {
+        _ =(&mut send_task) => {
+            recv_task.abort();
+            subscribe_task.abort();
+        },
+        _ = (&mut recv_task) => {
+            send_task.abort();
+            subscribe_task.abort();
+        },
+    }
+
+    // Cleaning task.
+    db.delete(&passphrase);
+    for channel in [
+        channel_for_role,
+        channel_for_opposite_role,
+        notification_channel_name,
+    ] {
+        db.delete_channel(&channel);
+    }
+    debug!("Session {passphrase}:{role} ended.");
 }
 
 // Include utf-8 file at **compile** time.
