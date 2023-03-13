@@ -138,20 +138,6 @@ impl Db {
         Db { shared }
     }
 
-    /// Get the value associated with a key.
-    ///
-    /// Returns `None` if there is no value associated with the key. This may be
-    /// due to never having assigned a value to the key or a previously assigned
-    /// value expired.
-    pub(crate) fn get(&self, key: &str) -> Option<String> {
-        // Acquire the lock, get the entry and clone the value.
-        //
-        // Because data is stored using `Bytes`, a clone here is a shallow
-        // clone. Data is not copied.
-        let state = self.shared.state.lock().unwrap();
-        state.entries.get(key).map(|entry| entry.data.clone())
-    }
-
     /// Delete the value associated with a key.
     ///
     /// Returns the number of value deleted, which may be 1 or 0.
