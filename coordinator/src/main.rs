@@ -13,6 +13,7 @@ use axum::{
 };
 use db::DbHolder;
 use futures_util::{SinkExt, StreamExt};
+use protocol::{Event, Role};
 use tokio::sync::mpsc;
 use tracing::{debug, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -65,17 +66,29 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     });
 
     // Get passphrase.
-    let passphrase = loop {
-        // Loop until a text message is found which should be passphrase.
-        if let Some(Ok(Message::Text(passphrase))) = receiver.next().await {
-            if !passphrase.is_empty() {
-                break passphrase;
-            }
-            // Passphrase should not be empty.
-            tx.send(Message::Text("Empty passphrase.".into()))
+    let passphrase = match receiver.next().await {
+        Some(Ok(Message::Text(msg))) => match serde_json::from_str::<Event>(&msg) {
+            Ok(Event::Passphrase(passphrase)) => passphrase,
+            _ => {
+                tx.send(Message::Text(
+                    serde_json::to_string(&Event::Error("Invalid passphrase.".into())).unwrap(),
+                ))
                 .await
                 .unwrap();
-            warn!("Received empty passphrase from client.");
+                warn!("Received invalid passphrase from client.");
+                return;
+            }
+        },
+        _ => {
+            tx.send(Message::Text(
+                serde_json::to_string(&Event::Error(
+                    "First message should be a passphrase string.".into(),
+                ))
+                .unwrap(),
+            ))
+            .await
+            .unwrap();
+            warn!("No passphrase string received.");
             return;
         }
     };
@@ -94,19 +107,19 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let channel_for_opposite_role = channel_name(passphrase.clone(), &role.opposite());
 
     // Exchange messages between initiator and responder.
-    let tx2 = tx.clone();
+    let tx_clone = tx.clone();
     let mut subscriber = db.subscribe(channel_for_opposite_role.clone());
     let subscribe_task = tokio::spawn(async move {
         while let Ok(msg) = subscriber.recv().await {
-            let _ = tx2.send(Message::Text(msg)).await;
+            let _ = tx_clone.send(Message::Text(msg)).await;
         }
     });
 
-    let db2 = db.clone();
+    let db_clone = db.clone();
     let channel_for_role2 = channel_for_role.clone();
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(Message::Text(msg))) = receiver.next().await {
-            if db2.publish(&channel_for_role2, msg) == 0 {
+            if db_clone.publish(&channel_for_role2, msg) == 0 {
                 warn!("Publish not successful.");
             }
         }
@@ -124,7 +137,12 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
             }
         }
     }
-    let _ = tx.send(Message::Text(role.to_string())).await;
+    let role_clone = role.clone();
+    let _ = tx
+        .send(Message::Text(
+            serde_json::to_string(&Event::Role(role_clone)).unwrap(),
+        ))
+        .await;
 
     // If any one of the tasks run to completion, we abort the other.
     tokio::select! {
@@ -153,30 +171,6 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
 // Include utf-8 file at **compile** time.
 async fn index() -> Html<&'static str> {
     Html("")
-}
-
-/// Peer role.
-enum Role {
-    Initiator,
-    Responder,
-}
-
-impl std::fmt::Display for Role {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self {
-            Role::Initiator => write!(f, "Initiator"),
-            Role::Responder => write!(f, "Responder"),
-        }
-    }
-}
-
-impl Role {
-    fn opposite(&self) -> Role {
-        match self {
-            Role::Initiator => Role::Responder,
-            Role::Responder => Role::Initiator,
-        }
-    }
 }
 
 fn channel_name(prefix: String, role: &Role) -> String {
