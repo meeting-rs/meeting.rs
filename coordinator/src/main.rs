@@ -7,7 +7,7 @@ use axum::{
         ws::{Message, WebSocket, WebSocketUpgrade},
         State,
     },
-    response::{Html, IntoResponse},
+    response::IntoResponse,
     routing::get,
     Router,
 };
@@ -15,6 +15,7 @@ use db::DbHolder;
 use futures_util::{SinkExt, StreamExt};
 use protocol::{Event, Role};
 use tokio::sync::mpsc;
+use tower_http::services::ServeDir;
 use tracing::{debug, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -36,7 +37,7 @@ async fn main() {
     let app_state = AppState { db_holder };
 
     let app = Router::new()
-        .route("/", get(index))
+        .nest_service("/", ServeDir::new("static"))
         .route("/websocket", get(websocket_handler))
         .with_state(app_state.into());
 
@@ -166,11 +167,6 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
         db.delete_channel(&channel);
     }
     debug!("Session {passphrase}:{role} ended.");
-}
-
-// Include utf-8 file at **compile** time.
-async fn index() -> Html<&'static str> {
-    Html("")
 }
 
 fn channel_name(prefix: String, role: &Role) -> String {
