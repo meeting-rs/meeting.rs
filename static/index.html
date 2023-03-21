@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+</head>
+
+<body>
+    <video id="localVideo" autoplay controls></video>
+    <video id="remoteVideo" autoplay controls></video>
+</body>
+<script type="module">
+    import init from "./pkg/peer.js";
+
+    async function run() {
+        await init();
+    }
+    run();
+</script>
+
+</html>
