@@ -6,7 +6,7 @@ pub enum Event {
     Passphrase(String),
     Offer(String),
     Answer(String),
-    IceCandidate(String),
+    IceCandidate(IceCandidate),
     Error(String),
 }
 
@@ -33,4 +33,11 @@ impl Role {
             Role::Responder => Role::Initiator,
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct IceCandidate {
+    pub candidate: String,
+    pub sdp_mid: Option<String>,
+    pub sdp_m_line_index: Option<u16>,
 }
