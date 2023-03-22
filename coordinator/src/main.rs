@@ -62,7 +62,10 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let (tx, mut rx) = mpsc::channel(100);
     let mut send_task = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
-            sender.send(msg).await.unwrap();
+            if let Err(error) = sender.send(msg).await {
+                warn!("WebSocket failed to send message: {error}");
+                return;
+            }
         }
     });
 
