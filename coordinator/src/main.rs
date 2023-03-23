@@ -123,6 +123,13 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let channel_for_role2 = channel_for_role.clone();
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(Message::Text(msg))) = receiver.next().await {
+            if matches!(
+                serde_json::from_str::<Event>(&msg).unwrap(),
+                Event::CloseConnection
+            ) {
+                // Return from the receiving task will end this session.
+                return;
+            }
             if db_clone.publish(&channel_for_role2, msg) == 0 {
                 warn!("Publish not successful.");
             }
