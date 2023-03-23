@@ -3,19 +3,30 @@
 
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link rel="stylesheet" href="style.css">
+    <title>Meeting</title>
 </head>
 
 <body>
-    <video id="localVideo" autoplay controls></video>
-    <video id="remoteVideo" autoplay controls></video>
+    <div class="container">
+        <form id="passphrase-form">
+            <h1>Enter your passphrase to create or join a meeting:</h1>
+            <label for="passphrase">Passphrase:</label>
+            <input type="text" id="passphrase" name="passphrase"><br><br>
+            <input type="submit" value="Enter">
+        </form>
+    </div>
+    <div class="video-container" id="video-container">
+        <video id="remote-video" autoplay controls></video>
+    </div>
 </body>
 <script type="module">
     import init from "./pkg/peer.js";
-
     async function run() {
         await init();
     }
     run();
 </script>
+<script src="script.js"></script>
 
 </html>
