@@ -206,7 +206,7 @@ async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
                     let mut media_stream_constraints = MediaStreamConstraints::new();
                     media_stream_constraints
                         .video(&JsValue::from_bool(true))
-                        .audio(&JsValue::from_bool(false));
+                        .audio(&JsValue::from_bool(true));
                     media_stream_constraints
                 })?,
         )
