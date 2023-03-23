@@ -7,6 +7,7 @@ pub enum Event {
     Offer(String),
     Answer(String),
     IceCandidate(IceCandidate),
+    CloseConnection,
     Error(String),
 }
 
