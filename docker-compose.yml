@@ -1,0 +1,15 @@
+version: '3'
+services:
+  coordinator:
+    image: ghcr.io/williamlsh/meeting.rs
+    container_name: coordinator
+    ports:
+      - 3000:3000
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/ssl/meeting
