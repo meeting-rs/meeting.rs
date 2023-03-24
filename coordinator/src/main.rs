@@ -115,12 +115,12 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let mut subscriber = db.subscribe(channel_for_opposite_role.clone());
     let subscribe_task = tokio::spawn(async move {
         while let Ok(msg) = subscriber.recv().await {
-            let _ = tx_clone.send(Message::Text(msg)).await;
+            tx_clone.send(Message::Text(msg)).await.unwrap();
         }
     });
 
     let db_clone = db.clone();
-    let channel_for_role2 = channel_for_role.clone();
+    let channel_for_role_clone = channel_for_role.clone();
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(Message::Text(msg))) = receiver.next().await {
             if matches!(
@@ -130,7 +130,7 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
                 // Return from the receiving task will end this session.
                 return;
             }
-            if db_clone.publish(&channel_for_role2, msg) == 0 {
+            if db_clone.publish(&channel_for_role_clone, msg) == 0 {
                 warn!("Publish not successful.");
             }
         }
@@ -140,7 +140,10 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let notification_channel_name = [&passphrase, "notification"].join(":");
     match role {
         Role::Initiator => {
-            let _ = db.subscribe(notification_channel_name.clone()).recv().await;
+            db.subscribe(notification_channel_name.clone())
+                .recv()
+                .await
+                .unwrap();
         }
         Role::Responder => {
             if db.publish(&notification_channel_name, String::from("")) == 0 {
@@ -149,11 +152,11 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
         }
     }
     let role_clone = role.clone();
-    let _ = tx
-        .send(Message::Text(
-            serde_json::to_string(&Event::Role(role_clone)).unwrap(),
-        ))
-        .await;
+    tx.send(Message::Text(
+        serde_json::to_string(&Event::Role(role_clone)).unwrap(),
+    ))
+    .await
+    .unwrap();
 
     // If any one of the tasks run to completion, we abort the other.
     tokio::select! {
