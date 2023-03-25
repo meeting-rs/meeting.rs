@@ -1,8 +1,8 @@
 # Meeting.rs
 
-A one to one online meeting application using WebRTC implemented in Rust and WASM.
+A one to one online video meeting application using WebRTC implemented in Rust and WASM.
 
-This application comprises a coordinator server and a peer web page. Users can enjoy realtime and private meeting with just one deployment.
+This application comprises a coordinator server and a peer web page. Users can enjoy realtime and private video meeting with just one deployment.
 
 ## Usage
 
