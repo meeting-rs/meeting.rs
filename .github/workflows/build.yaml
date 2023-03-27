@@ -1,0 +1,30 @@
+on: [workflow_dispatch, push, pull_request]
+
+name: Build
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust-toolchain: [stable]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: extractions/setup-just@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-toolchain }}
+          profile: minimal
+          override: true
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: rui314/setup-mold@v1
+      - name: Cache build artifacts
+        uses: Swatinem/rust-cache@v2
+      - name: Build code
+        run: just coordinator
