@@ -27,4 +27,4 @@ jobs:
       - name: Cache build artifacts
         uses: Swatinem/rust-cache@v2
       - name: Build code
-        run: just coordinator
+        run: just build
