@@ -9,3 +9,8 @@ coordinator: peer
 
 build: peer
     @cargo build -r -p coordinator
+    @cargo build -p coordinator
+
+image:
+    @docker build -t ghcr.io/williamlsh/meeting.rs .
+    @docker push ghcr.io/williamlsh/meeting.rs
