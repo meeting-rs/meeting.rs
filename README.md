@@ -1,32 +1,30 @@
 # Meeting.rs
 
-A one to one online video meeting application using WebRTC implemented in Rust and WASM.
-
-This application comprises a coordinator server and a peer web page. Users can enjoy realtime and private video meeting with just one deployment.
+Meeting.rs is an online one-to-one video meeting application that utilizes WebRTC, Rust, and WASM technologies. It includes a coordinator server and a peer web page, which allow users to have private and real-time video meetings with a single deployment.
 
 ## Usage
 
-Suppose you already have Rust toolchain installed, to compile Peer and run Coordinator server, you also need to install [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) and [just](https://github.com/casey/just).
+To compile and run the coordinator server, and to compile the peer, you need to have the Rust toolchain installed. You should also install [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) and [just](https://github.com/casey/just) to build and run the application.
+
+Once you have these prerequisites installed, run the following command:
 
 ```sh
 just coordinator
 ```
 
-Open `http://localhost:3000` in two browser tabs, input the same `passphrase` and assign camera and microphone permissions respectively, two users are then expected to see each other in realtime. Try to repeat several times until connected if it happens to be unsuccessful.
+Then, for each user, open http://localhost:3000 in a browser tab, grant camera and microphone permissions, and enter the same passphrase. Both users will be able to see each other in real-time immediately. For more details, you can view the web console of your browser.
 
 ## Deployment
 
-Use a Nginx TLS termination proxy for Coordination server to allow any hosts other than localhost to access.
-
-Besides the default Google STUN server the application uses, you can also use your own STUN/TURN server.
+To allow any hosts other than `localhost` to access the coordination server, you can use an Nginx TLS termination proxy. Additionally, the application uses the default Google STUN server, but you can also use your own STUN/TURN server.
 
 ## Project status
 
-This meeting application aims to be minimal and efficient by the power of Rust. It limits to allowing only one to one meeting.
+The Meeting.rs application is currently functioning exceptionally well, and its design emphasizes minimalism and efficiency through the use of Rust. The application is limited to one-to-one meetings, and there are currently no plans to add additional features.
 
 ## Contribution
 
-Contributions are most welcome!
+Contributions to the project are welcome and encouraged!
 
 ## License
 
