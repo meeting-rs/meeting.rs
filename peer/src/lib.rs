@@ -41,6 +41,7 @@ pub async fn main() -> Result<(), JsValue> {
     onicecandidate(&pc, tx.clone());
     onconnectionstatechange(&pc, tx.clone());
     ontrack(&pc);
+    handle_local_stream(&pc).await.unwrap();
 
     // Read task.
     handle_events(pc.clone(), tx.clone(), read);
@@ -255,8 +256,6 @@ fn passphrase_listener(tx: Sender<String>, pc: RtcPeerConnection) {
                 .await
                 .unwrap();
             log!("successfully sent passphrase.");
-
-            handle_local_stream(&pc).await.unwrap();
         });
     });
     document()
