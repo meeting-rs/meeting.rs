@@ -5,6 +5,7 @@ use futures::{
 };
 use gloo_console::log;
 use gloo_dialogs::alert;
+use gloo_events::EventListener;
 use gloo_net::websocket::{futures::WebSocket, Message};
 use gloo_utils::{document, window};
 use js_sys::{Array, Error, Object, Reflect};
@@ -44,9 +45,9 @@ pub async fn main() -> Result<(), JsValue> {
     handle_local_stream(&pc).await.unwrap();
 
     // Read task.
-    handle_events(pc.clone(), tx.clone(), read);
+    handle_events(pc, tx.clone(), read);
 
-    passphrase_listener(tx, pc);
+    passphrase_listener(tx);
 
     Ok(())
 }
@@ -239,31 +240,33 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
     })
 }
 
-fn passphrase_listener(tx: Sender<String>, pc: RtcPeerConnection) {
-    let listener_callback = Closure::<dyn FnMut()>::new(move || {
-        let passphrase = document()
-            .get_element_by_id("passphrase")
-            .expect("should have #passphrase on the page")
-            .dyn_ref::<HtmlInputElement>()
-            .expect("#passphrase should be an `HtmlInputElement`")
-            .value();
+fn passphrase_listener(tx: Sender<String>) {
+    let listener = EventListener::new(
+        {
+            document()
+                .get_element_by_id("passphrase-form")
+                .expect("should have #passphrase-form on the page")
+                .dyn_ref::<HtmlFormElement>()
+                .expect("#passphrase-form should be an `HtmlFormElement`")
+        },
+        "submit",
+        move |_| {
+            let passphrase = document()
+                .get_element_by_id("passphrase")
+                .expect("should have #passphrase on the page")
+                .dyn_ref::<HtmlInputElement>()
+                .expect("#passphrase should be an `HtmlInputElement`")
+                .value();
 
-        let mut tx = tx.clone();
-        let pc = pc.clone();
-        spawn_local(async move {
-            // Send passphrase.
-            tx.send(serde_json::to_string(&Event::Passphrase(passphrase)).unwrap())
-                .await
-                .unwrap();
-            log!("successfully sent passphrase.");
-        });
-    });
-    document()
-        .get_element_by_id("passphrase-form")
-        .expect("should have #passphrase-form on the page")
-        .dyn_ref::<HtmlFormElement>()
-        .expect("#passphrase-form should be an `HtmlFormElement`")
-        .add_event_listener_with_callback("submit", listener_callback.as_ref().unchecked_ref())
-        .unwrap();
-    listener_callback.forget();
+            let mut tx = tx.clone();
+            spawn_local(async move {
+                // Send passphrase.
+                tx.send(serde_json::to_string(&Event::Passphrase(passphrase)).unwrap())
+                    .await
+                    .unwrap();
+                log!("successfully sent passphrase.");
+            });
+        },
+    );
+    listener.forget();
 }
