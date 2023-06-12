@@ -26,7 +26,7 @@ To allow any hosts other than `localhost` to access the coordination server, you
 
 ## Project status
 
-The Meeting.rs application is currently functioning exceptionally well, and its design emphasizes minimalism and efficiency through the use of Rust. The application is limited to one-to-one meetings, and there are currently no plans to add additional features.
+The Meeting.rs application is currently functioning exceptionally well, and its design emphasizes minimalism and efficiency through the use of Rust. The application is limited to one-to-one meetings, and plans are underway to add additional features.
 
 ## Contribution
 
