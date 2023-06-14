@@ -2,6 +2,25 @@
 
 Meeting.rs is an online one-to-one video meeting application that utilizes WebRTC, Rust, and WASM technologies. It includes a coordinator server and a peer web page, which allow users to have private and real-time video meetings with a single deployment.
 
+## Contents
+
+- [Features](#features)
+- [Demo](#demo)
+- [Usage](#usage)
+- [Deployment](#deployment)
+- [Project status](#project-status)
+- [Contribution](#contribution)
+- [Contact](#contact)
+- [License](#license)
+
+## Features
+
+- [x] Peer to peer connection through WebRTC, with extremely low latency
+- [x] Video and audio communication
+- [ ] Mute video or audio
+- [ ] screen sharing
+
+
 ## Demo
 
 Please try the demo on https://meeting.shuttleapp.rs.
@@ -31,6 +50,12 @@ The Meeting.rs application is currently functioning exceptionally well, and its 
 ## Contribution
 
 Contributions to the project are welcome and encouraged!
+
+## Contact
+
+For further information or to discuss your specific requirements, please feel free to reach out to me:
+
+* Email: williamlsh@protonmail.com
 
 ## License
 
