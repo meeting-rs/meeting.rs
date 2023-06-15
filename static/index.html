@@ -17,7 +17,14 @@
         </form>
     </div>
     <div class="video-container" id="video-container">
-        <video id="remote-video" autoplay controls></video>
+        <div class="video-frame">
+            <video id="remote-video" autoplay controls></video>
+        </div>
+
+        <div class="controls">
+            <button type="button" id="audio-switcher">Mute Audio</button>
+            <button type="button" id="video-switcher">Mute Video</button>
+        </div>
     </div>
     <div class="controls">
         <button type="button" id="mute-audio" data-status="active" class="btn">Mute Audio</button>
