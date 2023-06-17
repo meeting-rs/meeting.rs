@@ -62,3 +62,18 @@ video {
   max-width: 100%;
   max-height: 100%;
 }
+
+.controls {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls button {
+  margin: 0 5px; /* Adjust the margin as needed for spacing */
+}
