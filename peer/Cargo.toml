@@ -14,7 +14,7 @@ futures = "0.3"
 gloo-console = "0.2"
 gloo-dialogs = "0.1"
 gloo-events = "0.1"
-gloo-net = "0.2"
+gloo-net = "0.3"
 gloo-utils = "0.1"
 js-sys = "0.3"
 protocol = { version = "0.1", path = "../protocol" }
