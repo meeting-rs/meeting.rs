@@ -215,6 +215,14 @@ async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
         )
         .await?,
     );
+    document()
+        .get_element_by_id("local-video")
+        .expect("should have #local-video on the page")
+        .dyn_ref::<HtmlMediaElement>()
+        .expect("#local-video should be an `HtmlVideoElement`")
+        .set_src_object(local_stream.dyn_ref());
+    log!("added local stream.");
+
     local_stream
         .get_tracks()
         .for_each(&mut |track: JsValue, _, _| {
