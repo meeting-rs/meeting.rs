@@ -62,14 +62,16 @@ input[type="submit"]:hover {
 
 video {
   border-radius: 8px 10px;
-  width: 100%;
+  width: 38vw;
 }
 
 .video-frame {
-  background-color: #fff;
+  /* background-color: #fff; */
   border-radius: 8px;
-  width: 40vw;
+  width: 80vw;
   max-height: 50vh;
+  display: flex;
+  justify-content: space-between;
 }
 
 .controls {
