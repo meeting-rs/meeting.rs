@@ -15,9 +15,9 @@ use protocol::{Event, IceCandidate, Role};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::{
-    HtmlMediaElement, MediaStream, MediaStreamConstraints, RtcConfiguration, RtcIceCandidate,
-    RtcIceCandidateInit, RtcIceConnectionState, RtcPeerConnection, RtcPeerConnectionIceEvent,
-    RtcSdpType, RtcSessionDescriptionInit, RtcTrackEvent,
+    HtmlMediaElement, MediaStream, MediaStreamConstraints, MediaStreamTrack, RtcConfiguration,
+    RtcIceCandidate, RtcIceCandidateInit, RtcIceConnectionState, RtcPeerConnection,
+    RtcPeerConnectionIceEvent, RtcSdpType, RtcSessionDescriptionInit, RtcTrackEvent,
 };
 
 #[wasm_bindgen(start)]
@@ -215,13 +215,6 @@ async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
         )
         .await?,
     );
-    document()
-        .get_element_by_id("local-video")
-        .expect("should have #local-video on the page")
-        .dyn_ref::<HtmlMediaElement>()
-        .expect("#local-video should be an `HtmlVideoElement`")
-        .set_src_object(local_stream.dyn_ref());
-    log!("added local stream.");
 
     local_stream
         .get_tracks()
@@ -230,6 +223,9 @@ async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
             pc.add_track_0(&track, &local_stream);
             log!("added a local track.");
 
+            if track.kind() == "video" {
+                display_local_video(&track);
+            }
             track_mute_listener(track);
         });
     Ok(())
@@ -250,4 +246,18 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
         rtc_configuration.ice_servers(&ice_servers);
         rtc_configuration
     })
+}
+
+fn display_local_video(track: &MediaStreamTrack) {
+    let video_stream = {
+        let tracks = Array::new();
+        tracks.push(track);
+        MediaStream::new_with_tracks(&tracks.into()).unwrap()
+    };
+    document()
+        .get_element_by_id("local-video")
+        .expect("should have #local-video on the page")
+        .dyn_ref::<HtmlMediaElement>()
+        .expect("#local-video should be an `HtmlVideoElement`")
+        .set_src_object(video_stream.dyn_ref());
 }
