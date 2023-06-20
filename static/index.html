@@ -16,19 +16,33 @@
         <input type="submit" value="Enter" />
       </form>
     </div>
+
     <div class="video-container" id="video-container">
-      <div class="video-frame">
+      <div class="col"></div>
+      <div class="main col">
         <video id="remote-video" autoplay controls></video>
-        <video id="local-video" autoplay controls></video>
+        <div class="controls">
+          <button
+            type="button"
+            id="mute-audio"
+            data-status="active"
+            class="btn"
+          >
+            Mute Audio
+          </button>
+          <button
+            type="button"
+            id="mute-video"
+            data-status="active"
+            class="btn"
+          >
+            Mute Video
+          </button>
+        </div>
       </div>
 
-      <div class="controls">
-        <button type="button" id="mute-audio" data-status="active" class="btn">
-          Mute Audio
-        </button>
-        <button type="button" id="mute-video" data-status="active" class="btn">
-          Mute Video
-        </button>
+      <div class="side-panel col">
+        <video id="local-video" autoplay controls></video>
       </div>
     </div>
 

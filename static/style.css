@@ -54,15 +54,43 @@ input[type="submit"]:hover {
   display: none;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  flex-wrap: wrap;
+  /* flex-direction: column; */
+  /* flex-wrap: wrap; */
   height: 100vh;
+  width: 100vw;
   background-color: #f2f2f2;
+  align-items:flex-start;
+}
+
+.col {
+  flex-basis: 30%;
+  padding-top: 30vh;
+
+}
+
+.main {
+  /* flex-basis: 60%; */
+  /* margin-right: 20px; */
+/*  */
+  min-width: 33vw;
+  min-height: 50vh;
+  margin-right: 30px;
+}
+
+#remote-video {
+  min-width: 30vw;
+  min-height: 40vh;
+}
+
+#local-video {
+  width: 20vh;
 }
 
 video {
   border-radius: 8px 10px;
-  width: 38vw;
+  /* width: 38vw; */
+  width: 100%;
+  height: 100%;
 }
 
 .video-frame {
@@ -76,6 +104,8 @@ video {
 
 .controls {
   padding-top: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 button {
