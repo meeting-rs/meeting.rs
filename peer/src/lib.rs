@@ -1,3 +1,5 @@
+mod listener;
+
 use futures::{
     channel::mpsc::{self, Sender},
     stream::SplitStream,
@@ -5,18 +7,17 @@ use futures::{
 };
 use gloo_console::log;
 use gloo_dialogs::alert;
-use gloo_events::EventListener;
 use gloo_net::websocket::{futures::WebSocket, Message};
 use gloo_utils::{document, window};
 use js_sys::{Array, Error, Object, Reflect};
+use listener::{passphrase_listener, track_mute_listener};
 use protocol::{Event, IceCandidate, Role};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::{
-    HtmlFormElement, HtmlInputElement, HtmlMediaElement, MediaStream, MediaStreamConstraints,
-    RtcConfiguration, RtcIceCandidate, RtcIceCandidateInit, RtcIceConnectionState,
-    RtcPeerConnection, RtcPeerConnectionIceEvent, RtcSdpType, RtcSessionDescriptionInit,
-    RtcTrackEvent,
+    HtmlMediaElement, MediaStream, MediaStreamConstraints, MediaStreamTrack, RtcConfiguration,
+    RtcIceCandidate, RtcIceCandidateInit, RtcIceConnectionState, RtcPeerConnection,
+    RtcPeerConnectionIceEvent, RtcSdpType, RtcSessionDescriptionInit, RtcTrackEvent,
 };
 
 #[wasm_bindgen(start)]
@@ -139,13 +140,13 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
 
 fn ontrack(pc: &RtcPeerConnection) {
     let ontrack_callback = Closure::<dyn FnMut(_)>::new(move |ev: RtcTrackEvent| {
-        let first_remote_stream = ev.streams().at(0);
+        let remote_stream = ev.streams().at(0);
         document()
             .get_element_by_id("remote-video")
             .expect("should have #remote-video on the page")
             .dyn_ref::<HtmlMediaElement>()
             .expect("#remote-video should be an `HtmlVideoElement`")
-            .set_src_object(first_remote_stream.dyn_ref());
+            .set_src_object(remote_stream.dyn_ref());
         log!("added remote stream.");
     });
     pc.set_ontrack(Some(ontrack_callback.as_ref().unchecked_ref()));
@@ -214,11 +215,18 @@ async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
         )
         .await?,
     );
+
     local_stream
         .get_tracks()
         .for_each(&mut |track: JsValue, _, _| {
-            pc.add_track_0(track.dyn_ref().unwrap(), &local_stream);
+            let track = track.dyn_into().unwrap();
+            pc.add_track_0(&track, &local_stream);
             log!("added a local track.");
+
+            if track.kind() == "video" {
+                display_local_video(&track);
+            }
+            track_mute_listener(track);
         });
     Ok(())
 }
@@ -240,33 +248,16 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
     })
 }
 
-fn passphrase_listener(tx: Sender<String>) {
-    let listener = EventListener::new(
-        {
-            document()
-                .get_element_by_id("passphrase-form")
-                .expect("should have #passphrase-form on the page")
-                .dyn_ref::<HtmlFormElement>()
-                .expect("#passphrase-form should be an `HtmlFormElement`")
-        },
-        "submit",
-        move |_| {
-            let passphrase = document()
-                .get_element_by_id("passphrase")
-                .expect("should have #passphrase on the page")
-                .dyn_ref::<HtmlInputElement>()
-                .expect("#passphrase should be an `HtmlInputElement`")
-                .value();
-
-            let mut tx = tx.clone();
-            spawn_local(async move {
-                // Send passphrase.
-                tx.send(serde_json::to_string(&Event::Passphrase(passphrase)).unwrap())
-                    .await
-                    .unwrap();
-                log!("successfully sent passphrase.");
-            });
-        },
-    );
-    listener.forget();
+fn display_local_video(track: &MediaStreamTrack) {
+    let video_stream = {
+        let tracks = Array::new();
+        tracks.push(track);
+        MediaStream::new_with_tracks(&tracks.into()).unwrap()
+    };
+    document()
+        .get_element_by_id("local-video")
+        .expect("should have #local-video on the page")
+        .dyn_ref::<HtmlMediaElement>()
+        .expect("#local-video should be an `HtmlVideoElement`")
+        .set_src_object(video_stream.dyn_ref());
 }
