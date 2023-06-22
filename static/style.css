@@ -121,3 +121,9 @@ button {
 .controls button {
   margin: 0 5px; /* Adjust the margin as needed for spacing */
 }
+
+@media screen and (max-width: 767px) {
+  .controls, #local-video {
+    display: none;
+  }
+}
