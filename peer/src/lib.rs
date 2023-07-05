@@ -8,9 +8,9 @@ use futures::{
 use gloo_console::log;
 use gloo_dialogs::alert;
 use gloo_net::websocket::{futures::WebSocket, Message};
-use gloo_utils::{document, window};
+use gloo_utils::window;
 use js_sys::{Array, Error, Object, Reflect};
-use listener::{passphrase_listener, track_mute_listener};
+use listener::{get_element_by_id, passphrase_listener, track_mute_listener};
 use protocol::{Event, IceCandidate, Role};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
@@ -141,10 +141,7 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
 fn ontrack(pc: &RtcPeerConnection) {
     let ontrack_callback = Closure::<dyn FnMut(_)>::new(move |ev: RtcTrackEvent| {
         let remote_stream = ev.streams().at(0);
-        document()
-            .get_element_by_id("remote-video")
-            .expect("should have #remote-video on the page")
-            .dyn_ref::<HtmlMediaElement>()
+        get_element_by_id::<HtmlMediaElement>("remote-video")
             .expect("#remote-video should be an `HtmlVideoElement`")
             .set_src_object(remote_stream.dyn_ref());
         log!("added remote stream.");
@@ -254,10 +251,7 @@ fn display_local_video(track: &MediaStreamTrack) {
         tracks.push(track);
         MediaStream::new_with_tracks(&tracks.into()).unwrap()
     };
-    document()
-        .get_element_by_id("local-video")
-        .expect("should have #local-video on the page")
-        .dyn_ref::<HtmlMediaElement>()
+    get_element_by_id::<HtmlMediaElement>("local-video")
         .expect("#local-video should be an `HtmlVideoElement`")
         .set_src_object(video_stream.dyn_ref());
 }
