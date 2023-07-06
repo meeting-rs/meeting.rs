@@ -117,7 +117,7 @@ impl Db {
             Entry::Vacant(e) => {
                 // No broadcast channel exists yet, so create one.
                 //
-                // The channel is created with a capacity of `1024` messages. A
+                // The channel is created with a capacity of `10` messages. A
                 // message is stored in the channel until **all** subscribers
                 // have seen it. This means that a slow subscriber could result
                 // in messages being held indefinitely.
@@ -125,7 +125,7 @@ impl Db {
                 // When the channel's capacity fills up, publishing will result
                 // in old messages being dropped. This prevents slow consumers
                 // from blocking the entire system.
-                let (tx, rx) = broadcast::channel(1024);
+                let (tx, rx) = broadcast::channel(10);
                 e.insert(tx);
                 rx
             }
