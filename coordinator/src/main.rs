@@ -102,9 +102,24 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
     let db = state.db_holder.db();
 
     // Determine a role, initiator or responder.
-    let role = match db.set_nx(passphrase.clone(), String::from("")) {
+    let role = match db.set(passphrase.clone()) {
         1 => Role::Initiator,
-        _ => Role::Responder,
+        2 => Role::Responder,
+        _ => {
+            tx.send(Message::Text(
+                serde_json::to_string(&Event::Error(
+                    "A session with the same passphrase already exists!".into(),
+                ))
+                .unwrap(),
+            ))
+            .await
+            .unwrap();
+            warn!(
+                "A client with passphrase {} is rejected to join this session",
+                passphrase
+            );
+            return;
+        }
     };
     debug!("The client's role is: {role}.");
 
