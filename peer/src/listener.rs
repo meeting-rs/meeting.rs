@@ -40,11 +40,29 @@ pub(crate) fn track_mute_listener(track: MediaStreamTrack) {
             .unwrap_or_else(|_| panic!("#{} should be an `HtmlButtonElement`", element_id)),
         "click",
         move |_| {
-            if track.enabled() {
-                track.set_enabled(false);
-            } else {
-                track.set_enabled(true);
-            }
+            track.set_enabled(!track.enabled());
+        },
+    );
+    listener.forget();
+}
+
+pub(crate) fn sharing_option_listener(element_id: String, mut tx: Sender<UserSharingOption>) {
+    let listener = EventListener::once(
+        &get_element_by_id::<HtmlButtonElement>(&element_id)
+            .unwrap_or_else(|_| panic!("#{} should be an `HtmlButtonElement`", element_id)),
+        "click",
+        move |_| {
+            spawn_local(async move {
+                let _ = tx
+                    .send({
+                        if element_id == "option-media" {
+                            UserSharingOption::Media
+                        } else {
+                            UserSharingOption::Screen
+                        }
+                    })
+                    .await;
+            });
         },
     );
     listener.forget();
@@ -57,4 +75,9 @@ pub(crate) fn get_element_by_id<T: wasm_bindgen::JsCast>(
         .get_element_by_id(element_id)
         .unwrap_or_else(|| panic!("should have #{} on the page", element_id))
         .dyn_into::<T>()
+}
+
+pub(crate) enum UserSharingOption {
+    Media,
+    Screen,
 }

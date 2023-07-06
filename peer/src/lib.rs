@@ -1,4 +1,5 @@
 mod listener;
+mod media;
 
 use futures::{
     channel::mpsc::{self, Sender},
@@ -8,16 +9,15 @@ use futures::{
 use gloo_console::log;
 use gloo_dialogs::alert;
 use gloo_net::websocket::{futures::WebSocket, Message};
-use gloo_utils::window;
 use js_sys::{Array, Error, Object, Reflect};
-use listener::{get_element_by_id, passphrase_listener, track_mute_listener};
+use listener::{get_element_by_id, passphrase_listener};
 use protocol::{Event, IceCandidate, Role};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::{
-    HtmlMediaElement, MediaStream, MediaStreamConstraints, MediaStreamTrack, RtcConfiguration,
-    RtcIceCandidate, RtcIceCandidateInit, RtcIceConnectionState, RtcPeerConnection,
-    RtcPeerConnectionIceEvent, RtcSdpType, RtcSessionDescriptionInit, RtcTrackEvent,
+    HtmlMediaElement, RtcConfiguration, RtcIceCandidate, RtcIceCandidateInit,
+    RtcIceConnectionState, RtcPeerConnection, RtcPeerConnectionIceEvent, RtcSdpType,
+    RtcSessionDescriptionInit, RtcTrackEvent,
 };
 
 #[wasm_bindgen(start)]
@@ -43,7 +43,7 @@ pub async fn main() -> Result<(), JsValue> {
     onicecandidate(&pc, tx.clone());
     onconnectionstatechange(&pc, tx.clone());
     ontrack(&pc);
-    handle_local_stream(&pc).await.unwrap();
+    media::init(&pc).await?;
 
     // Read task.
     handle_events(pc, tx.clone(), read);
@@ -196,38 +196,6 @@ fn onicecandidate(pc: &RtcPeerConnection, tx: Sender<String>) {
     onicecandidate_callback.forget();
 }
 
-async fn handle_local_stream(pc: &RtcPeerConnection) -> Result<(), JsValue> {
-    let local_stream = MediaStream::from(
-        JsFuture::from(
-            window()
-                .navigator()
-                .media_devices()?
-                .get_user_media_with_constraints(&{
-                    let mut media_stream_constraints = MediaStreamConstraints::new();
-                    media_stream_constraints
-                        .video(&JsValue::from_bool(true))
-                        .audio(&JsValue::from_bool(true));
-                    media_stream_constraints
-                })?,
-        )
-        .await?,
-    );
-
-    local_stream
-        .get_tracks()
-        .for_each(&mut |track: JsValue, _, _| {
-            let track = track.dyn_into().unwrap();
-            pc.add_track_0(&track, &local_stream);
-            log!("added a local track.");
-
-            if track.kind() == "video" {
-                display_local_video(&track);
-            }
-            track_mute_listener(track);
-        });
-    Ok(())
-}
-
 fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
     RtcPeerConnection::new_with_configuration(&{
         let ice_servers = Array::new();
@@ -243,15 +211,4 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
         rtc_configuration.ice_servers(&ice_servers);
         rtc_configuration
     })
-}
-
-fn display_local_video(track: &MediaStreamTrack) {
-    let video_stream = {
-        let tracks = Array::new();
-        tracks.push(track);
-        MediaStream::new_with_tracks(&tracks.into()).unwrap()
-    };
-    get_element_by_id::<HtmlMediaElement>("local-video")
-        .expect("#local-video should be an `HtmlVideoElement`")
-        .set_src_object(video_stream.dyn_ref());
 }
