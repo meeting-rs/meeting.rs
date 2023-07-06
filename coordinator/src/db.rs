@@ -8,32 +8,13 @@ use std::{
 
 use tokio::sync::broadcast;
 
-/// A wrapper around a `Db` instance. This exists to allow orderly cleanup
-/// of the `Db` by signalling the background purge task to shut down when
-/// this struct is dropped.
 #[derive(Debug)]
 pub(crate) struct DbHolder {
-    /// The `Db` instance that will be shut down when this `DbHolder` struct
-    /// is dropped.
     db: Db,
 }
 
-/// Server state shared across all connections.
-///
-/// `Db` contains a `HashMap` storing the key/value data and all
-/// `broadcast::Sender` values for active pub/sub channels.
-///
-/// A `Db` instance is a handle to shared state. Cloning `Db` is shallow and
-/// only incurs an atomic ref count increment.
-///
-/// When a `Db` value is created, a background task is spawned. This task is
-/// used to expire values after the requested duration has elapsed. The task
-/// runs until all instances of `Db` are dropped, at which point the task
-/// terminates.
 #[derive(Debug, Clone)]
 pub(crate) struct Db {
-    /// Handle to shared state. The background task will also have an
-    /// `Arc<Shared>`.
     shared: Arc<Shared>,
 }
 
@@ -44,12 +25,7 @@ struct Shared {
 
 #[derive(Debug)]
 struct State {
-    /// The key-value data. We are not trying to do anything fancy so a
-    /// `std::collections::HashMap` works fine.
     entries: HashMap<String, Entry>,
-
-    /// The pub/sub key-space. Redis uses a **separate** key space for key-value
-    /// and pub/sub. `mini-redis` handles this by using a separate `HashMap`.
     pub_sub: HashMap<String, broadcast::Sender<String>>,
 }
 
@@ -61,8 +37,6 @@ struct Entry {
 }
 
 impl DbHolder {
-    /// Create a new `DbHolder`, wrapping a `Db` instance. When this is dropped
-    /// the `Db`'s purge task will be shut down.
     pub(crate) fn new() -> DbHolder {
         DbHolder { db: Db::new() }
     }
@@ -75,8 +49,6 @@ impl DbHolder {
 }
 
 impl Db {
-    /// Create a new, empty, `Db` instance. Allocates shared state and spawns a
-    /// background task to manage key expiration.
     pub(crate) fn new() -> Db {
         let shared = Arc::new(Shared {
             state: Mutex::new(State {
