@@ -33,7 +33,7 @@ struct State {
 #[derive(Debug)]
 struct Entry {
     /// Stored data
-    data: String,
+    data: u8,
 }
 
 impl DbHolder {
@@ -76,20 +76,19 @@ impl Db {
         state.pub_sub.remove(key).map(|_| 1).unwrap_or(0)
     }
 
-    /// Set the value associated with a key along with an optional expiration
-    /// Duration.
+    /// Set only the key without value.
     ///
-    /// If a value is already associated with the key, it won't insert.
-    ///
-    /// Returns 1 if operation is successful, otherwise 0.
-    pub(crate) fn set_nx(&self, key: String, value: String) -> usize {
+    /// Returns the number a key is set.
+    pub(crate) fn set(&self, key: String) -> u8 {
         let mut state = self.shared.state.lock().unwrap();
-        if state.entries.contains_key(&key) {
-            return 0;
+        if let Some(v) = state.entries.get_mut(&key) {
+            // Increment the value counter every the same key is set.
+            v.data += 1;
+            return v.data;
         }
 
-        // Insert the entry into the `HashMap`.
-        state.entries.insert(key, Entry { data: value });
+        // Insert the entry into the `HashMap`. Set value counter to 1 for the first time.
+        state.entries.insert(key, Entry { data: 1 });
 
         // Release the mutex before notifying the background task. This helps
         // reduce contention by avoiding the background task waking up only to
