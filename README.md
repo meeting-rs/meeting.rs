@@ -18,14 +18,14 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 - [x] Peer to peer connection through WebRTC, with extremely low latency
 - [x] Video and audio communication
 - [x] Mute or unmute video and audio
-- [ ] screen sharing
+- [x] screen sharing
 
 
 ## Demo
 
 Please try the demo on https://meeting.shuttleapp.rs.
 
-Please note that this demo is hosted on shuttle.rs with a Hobby plan, which means there may be limits on the number of requests. Additionally, this demo only utilizes a public Google STUN server, so there may be unsuccessful connections in certain scenarios.
+Note that this demo is hosted on shuttle.rs with a Hobby plan, which means there may be limits on the number of requests.
 
 ## Usage
 
