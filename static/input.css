@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+}
+  
+html, 
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    margin: 0;
+}

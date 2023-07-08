@@ -1,4 +1,7 @@
-peer:
+build_css:
+    @npx tailwindcss -i ./static/input.css -o ./static/output.css
+
+peer: build_css
     @wasm-pack build --release --no-typescript -t web -d ../static/pkg peer
 
 serve: peer

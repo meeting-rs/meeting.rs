@@ -1,43 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-  <link rel="stylesheet" href="style.css" />
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./output.css" />
 
   <title>Meeting</title>
 </head>
 
-<body>
-  <div class="container">
-    <form id="passphrase-form">
+<body class="w-full h-full">
+  <div class="container flex justify-center items-center h-screen w-screen m-auto bg-[#e6e6e6]">
+    <form class="flex flex-col justify-center w-[80%] items-center rounded-xl bg-[#f2f2f2] p-[2rem]" id="passphrase-form">
       <h1>Enter your passphrase to create or join a meeting:</h1>
-      <button type="button" id="option-media">Video and audio sharing</button>
-      <button type="button" id="option-screen">Screen sharing</button>
-      <label for="passphrase">Passphrase:</label>
-      <input type="text" id="passphrase" name="passphrase" /><br /><br />
-      <input type="submit" value="Enter" />
+      <button class="bg-[#555] p-[5px] rounded-md text-white my-1 cursor-pointer" type="button" id="option-media">Video and audio sharing</button>
+      <button class="bg-[#555] p-[5px] rounded-md text-white cursor-pointer" type="button" id="option-screen">Screen sharing</button>
+      <label class="text-2xl mb-[0.5rem]" for="passphrase">Passphrase:</label>
+      <input class="text-2xl p-[0.5rem] bg-[#9e9d9d] rounded-md border-solid border-[#ccc]" type="text" id="passphrase" name="passphrase" /><br /><br />
+      <input class="text-2xl text-white px-5 py-1.5 rounded-md bg-[#333] cursor-pointer hover:bg-[#555]" type="submit" value="Enter" />
     </form>
   </div>
 
-  <div class="video-container" id="video-container">
-    <div class="col"></div>
-    <div class="main col">
-      <video id="remote-video" autoplay controls></video>
-      <div class="controls">
-        <button type="button" id="mute-audio" data-status="active" class="btn">
-          Mute Audio
-        </button>
-        <button type="button" id="mute-video" data-status="active" class="btn">
-          Mute Video
-        </button>
+    <div class="video-container hidden justify-center items-center h-screen w-screen bg-[#f2f2f2]" id="video-container">
+      <div class="col"></div>
+      <div class="main col min-w-[33vw] min-h-[50vh] m-3">
+        <video class="flex min-w-[30vw] min-h-[40vh] rounded-md" id="remote-video" autoplay controls></video>
+        <div class="controls flex pt-[30px] justify-center">
+          <button
+            type="button"
+            class="bg-[#555] p-[5px] rounded-md text-white mr-[15px] cursor-pointer"
+            id="mute-audio"
+            data-status="active"
+            class="btn"
+          >
+            Mute Audio
+          </button>
+          <button
+            type="button"
+            class="bg-[#555] p-[5px] rounded-md text-white mr-[15px] cursor-pointer"
+            id="mute-video"
+            data-status="active"
+            class="btn"
+          >
+            Mute Video
+          </button>
+        </div>
+      </div>
+
+      <div class="side-panel col m-3">
+        <video class="hidden md:flex min-w-[30vw] min-h-[40vh] -translate-y-8 rounded-md" id="local-video" autoplay controls></video>
       </div>
     </div>
-
-    <div class="side-panel col">
-      <video id="local-video" autoplay controls></video>
-    </div>
-  </div>
 
   <script type="module">
     import init from "./pkg/peer.js";
