@@ -40,6 +40,7 @@ features = [
     "RtcConfiguration",
     "MediaDevices",
     "MediaStreamConstraints",
+    "DisplayMediaStreamConstraints",
     "MediaStream",
     "MediaStreamTrack",
     "RtcRtpSender",

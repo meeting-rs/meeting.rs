@@ -1,59 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-    <link rel="stylesheet" href="style.css" />
 
-    <title>Meeting</title>
-  </head>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  <link rel="stylesheet" href="style.css" />
 
-  <body>
-    <div class="container">
-      <form id="passphrase-form">
-        <h1>Enter your passphrase to create or join a meeting:</h1>
-        <label for="passphrase">Passphrase:</label>
-        <input type="text" id="passphrase" name="passphrase" /><br /><br />
-        <input type="submit" value="Enter" />
-      </form>
-    </div>
+  <title>Meeting</title>
+</head>
 
-    <div class="video-container" id="video-container">
-      <div class="col"></div>
-      <div class="main col">
-        <video id="remote-video" autoplay controls></video>
-        <div class="controls">
-          <button
-            type="button"
-            id="mute-audio"
-            data-status="active"
-            class="btn"
-          >
-            Mute Audio
-          </button>
-          <button
-            type="button"
-            id="mute-video"
-            data-status="active"
-            class="btn"
-          >
-            Mute Video
-          </button>
-        </div>
-      </div>
+<body>
+  <div class="container">
+    <form id="passphrase-form">
+      <h1>Enter your passphrase to create or join a meeting:</h1>
+      <button type="button" id="option-media">Video and audio sharing</button>
+      <button type="button" id="option-screen">Screen sharing</button>
+      <label for="passphrase">Passphrase:</label>
+      <input type="text" id="passphrase" name="passphrase" /><br /><br />
+      <input type="submit" value="Enter" />
+    </form>
+  </div>
 
-      <div class="side-panel col">
-        <video id="local-video" autoplay controls></video>
+  <div class="video-container" id="video-container">
+    <div class="col"></div>
+    <div class="main col">
+      <video id="remote-video" autoplay controls></video>
+      <div class="controls">
+        <button type="button" id="mute-audio" data-status="active" class="btn">
+          Mute Audio
+        </button>
+        <button type="button" id="mute-video" data-status="active" class="btn">
+          Mute Video
+        </button>
       </div>
     </div>
 
-    <script type="module">
-      import init from "./pkg/peer.js";
-      async function run() {
-        await init();
-      }
-      run();
-    </script>
+    <div class="side-panel col">
+      <video id="local-video" autoplay controls></video>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
-  </body>
+  <script type="module">
+    import init from "./pkg/peer.js";
+    async function run() {
+      await init();
+    }
+    run();
+  </script>
+
+  <script src="script.js"></script>
+</body>
+
 </html>
