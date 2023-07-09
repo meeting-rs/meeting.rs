@@ -7,92 +7,6 @@
 
   <title>Meeting</title>
 </head>
-<style>
-  #passphrase-form button {
-    margin: 10px 0;
-  }
-
-  .mButton {
-    box-sizing: border-box;
-    display: inline-block;
-    padding: 6px 1em;
-    border-radius: 4px;
-    color: #fff;
-    font-family: inherit;
-    background-color: #000;
-    user-select: none;
-    cursor: pointer;
-    text-align: center;
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-    &.primary {
-      background-color: #09f;
-    }
-
-    &.warning {
-      background-color: #F90;
-    }
-
-    &.info {
-      background-color: #C03;
-    }
-
-    &.pure {
-      border: 1px solid #ccc;
-      color: rgba(0, 0, 0, 0.65);
-      background-color: #fff;
-
-      &::after {
-        background-image: radial-gradient(circle, #ccc 10%, transparent 11%);
-      }
-    }
-
-    &.circle {
-      border-radius: 1.5em;
-    }
-
-    &.block {
-      width: 100%;
-      display: block;
-    }
-  }
-
-  .ripple {
-    position: relative;
-    overflow: hidden;
-
-    &::after {
-      content: "";
-      display: block;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      background-image: radial-gradient(circle, #fff 10%, transparent 11%);
-      background-repeat: no-repeat;
-      background-position: 50%;
-      transform: scale(12, 12);
-      opacity: 0;
-      transition: transform .6s, opacity .6s;
-    }
-
-    &:active::after {
-      transform: scale(0, 0);
-      opacity: .3;
-      transition: 0s;
-    }
-  }
-  .bg {
-    background-color: #1976d2 !important;
-  }
-  .tag {
-    padding: 10px 0;
-  }
-  .passphrase {
-    font-size: 1rem;
-  }
-</style>
 
 <body>
   <div class="container">
@@ -102,10 +16,11 @@
         <button type="button" class="mButton ripple" id="option-media">Video and audio sharing</button>
         <button type="button" class="mButton ripple" id="option-screen">Screen sharing</button>
       </div>
-      
-      <label for="passphrase" class="passphrase">Passphrase:  <input type="text" id="passphrase" name="passphrase" /></label>
-    <br />
-      <input type="submit"  class="mButton ripple bg" value="Enter" />
+
+      <label for="passphrase" class="passphrase">Passphrase: <input type="text" id="passphrase"
+          name="passphrase" /></label>
+      <br />
+      <input type="submit" class="mButton ripple bg" value="Enter" />
     </form>
   </div>
 
