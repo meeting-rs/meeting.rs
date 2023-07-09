@@ -4,6 +4,8 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 
 ## Contents
 
+<details>
+
 - [Features](#features)
 - [Demo](#demo)
 - [Usage](#usage)
@@ -12,6 +14,7 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 - [Contribution](#contribution)
 - [Contact](#contact)
 - [License](#license)
+</details>
 
 ## Features
 
@@ -19,7 +22,6 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 - [x] Video and audio communication
 - [x] Mute or unmute video and audio
 - [x] screen sharing
-
 
 ## Demo
 
@@ -37,7 +39,15 @@ Once you have these prerequisites installed, run the following command:
 just coordinator
 ```
 
-Then, for each user, open http://localhost:3000 in a browser tab, grant camera and microphone permissions, and enter the same passphrase. Both users will be able to see each other in real-time immediately. For more details, you can view the web console of your browser.
+Then follow these steps:
+
+1. For each user, open a browser tab and navigate to the following address: http://localhost:3000.
+2. Once the page loads, you will find two buttons: "Video and Audio Sharing" and "Screen Sharing". Click on the button corresponding to the content you want to share.
+3. The browser will prompt you for permissions. Grant the respective permissions depending on your choice (e.g., camera and microphone access for video and audio sharing, screen sharing permission for screen sharing).
+4. After granting the necessary permissions, enter the same passphrase as the other user. This passphrase ensures that both users are connected to the same session.
+5. Instantly, both users will be able to see each other in real-time.
+
+For more detailed information, you can access the web console of your browser.
 
 ## Deployment
 
@@ -55,7 +65,7 @@ Contributions to the project are welcome and encouraged!
 
 For further information or to discuss your specific requirements, please feel free to reach out to me:
 
-* Email: williamlsh@protonmail.com
+- Email: williamlsh@protonmail.com
 
 ## License
 
