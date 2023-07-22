@@ -41,12 +41,13 @@ async fn handle_local_stream(
     };
     // Clean channel.
     rx.close();
-    local_streams.into_iter().for_each(|local_stream| {
+
+    local_streams.iter().for_each(|local_stream| {
         local_stream
             .get_tracks()
             .for_each(&mut |track: JsValue, _, _| {
                 let track = track.dyn_into().unwrap();
-                pc.add_track_0(&track, &local_stream);
+                pc.add_track_0(&track, local_stream);
                 log!("added a local track.");
 
                 if track.kind() == "video" {
@@ -81,9 +82,7 @@ async fn get_display_media() -> Result<MediaStream, JsValue> {
             window()
                 .navigator()
                 .media_devices()?
-                .get_display_media_with_constraints(
-                    DisplayMediaStreamConstraints::new().audio(&JsValue::from_bool(true)),
-                )?,
+                .get_display_media_with_constraints(&DisplayMediaStreamConstraints::default())?,
         )
         .await?,
     ))
