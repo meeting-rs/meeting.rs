@@ -21,7 +21,7 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 - [x] Peer to peer connection through WebRTC, with extremely low latency
 - [x] Video and audio communication
 - [x] Mute or unmute video and audio
-- [x] screen sharing
+- [x] Screen sharing
 
 ## Demo
 
