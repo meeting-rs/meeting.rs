@@ -213,3 +213,8 @@ button {
 .passphrase {
   font-size: 1rem;
 }
+.video_play {
+  box-shadow: 0 0 5px 0;
+    background: #000;
+    object-fit: cover;
+}
