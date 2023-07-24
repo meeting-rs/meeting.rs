@@ -24,3 +24,10 @@ var btns = document.getElementsByClassName("btn");
 for (var i = 0; i < btns.length; i++) {
   btns[i].addEventListener("click", onBtnClick);
 }
+
+function confirmReturnHome(){
+   let confirmFlg = confirm('You will exit this meeting session and leave this page')
+   if(confirmFlg){
+    location.href = '/'  // home url
+   }
+}
