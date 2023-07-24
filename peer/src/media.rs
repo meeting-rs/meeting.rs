@@ -34,9 +34,9 @@ async fn handle_local_stream(
             vec![stream]
         }
         UserSharingOption::Screen => {
-            let display_stream = get_display_media().await?;
             let media_stream = get_user_media(false).await?;
-            vec![display_stream, media_stream]
+            let display_stream = get_display_media().await?;
+            vec![media_stream, display_stream]
         }
     };
     // Clean channel.
