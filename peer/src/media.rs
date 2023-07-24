@@ -28,34 +28,32 @@ async fn handle_local_stream(
     mut rx: Receiver<UserSharingOption>,
 ) -> Result<(), JsValue> {
     // We receive the first message since there will only be one user sharing option.
-    let local_streams = match rx.next().await.unwrap() {
-        UserSharingOption::Media => {
-            let stream = get_user_media(true).await?;
-            vec![stream]
-        }
+    let local_stream = match rx.next().await.unwrap() {
+        UserSharingOption::Media => get_user_media(true).await?,
         UserSharingOption::Screen => {
-            let display_stream = get_display_media().await?;
             let media_stream = get_user_media(false).await?;
-            vec![display_stream, media_stream]
+            let display_stream = get_display_media().await?;
+            let tracks = media_stream
+                .get_tracks()
+                .concat(&display_stream.get_tracks());
+            MediaStream::new_with_tracks(&tracks)?
         }
     };
     // Clean channel.
     rx.close();
 
-    local_streams.iter().for_each(|local_stream| {
-        local_stream
-            .get_tracks()
-            .for_each(&mut |track: JsValue, _, _| {
-                let track = track.dyn_into().unwrap();
-                pc.add_track_0(&track, local_stream);
-                log!("added a local track.");
+    local_stream
+        .get_tracks()
+        .for_each(&mut |track: JsValue, _, _| {
+            let track = track.dyn_into().unwrap();
+            pc.add_track_0(&track, &local_stream);
+            log!("added a local track.");
 
-                if track.kind() == "video" {
-                    display_local_video(&track);
-                }
-                track_mute_listener(track);
-            });
-    });
+            if track.kind() == "video" {
+                display_local_video(&track);
+            }
+            track_mute_listener(track);
+        });
 
     Ok(())
 }
