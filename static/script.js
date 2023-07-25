@@ -25,9 +25,14 @@ for (var i = 0; i < btns.length; i++) {
   btns[i].addEventListener("click", onBtnClick);
 }
 
+function handleBeforeUnload(e) {
+  e.preventDefault();
+  e.returnValue = 'You will exit this meeting session and leave this page'
+}
+
+window.addEventListener('beforeunload',handleBeforeUnload)
+
 function confirmReturnHome(){
-   let confirmFlg = confirm('You will exit this meeting session and leave this page')
-   if(confirmFlg){
-    location.href = '/'  // home url
-   }
+  window.removeEventListener('beforeunload',handleBeforeUnload);
+  location.href = '/'  // home url
 }

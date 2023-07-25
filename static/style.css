@@ -58,22 +58,32 @@ input[type="submit"]:hover {
   /* flex-wrap: wrap; */
   height: 100vh;
   width: 100vw;
+  min-width: 1200px;;
+  overflow: hidden;
   background-color: #f2f2f2;
-  align-items: flex-start;
+  /* align-items: flex-start; */
 }
 
 .col {
   flex-basis: 30%;
-  padding-top: 30vh;
+  /* padding-top: 30vh; */
 }
 
 .main {
   /* flex-basis: 60%; */
   /* margin-right: 20px; */
   /*  */
-  min-width: 33vw;
+  /* min-width: 33vw; */
   min-height: 50vh;
   margin-right: 30px;
+  flex: 2;
+  padding: 0 80px;
+  margin: 0;
+}
+.side-panel {
+  flex: 1;
+  padding: 40px 40px 0 0;
+  height: 100%;
 }
 
 #remote-video {
@@ -82,14 +92,14 @@ input[type="submit"]:hover {
 }
 
 #local-video {
-  width: 20vh;
+  /* width: 20vh; */
 }
 
 video {
   border-radius: 8px 10px;
   /* width: 38vw; */
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .video-frame {
@@ -105,6 +115,10 @@ video {
   padding-top: 30px;
   display: flex;
   justify-content: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 50px;
 }
 
 button {
@@ -219,6 +233,11 @@ button {
 }
 .video_play {
   box-shadow: 0 0 5px 0;
-    background: #000;
-    object-fit: cover;
+  background: #000;
+  object-fit: cover;
+}
+.size-big {
+  font-size: 1.2rem;
+  padding: 0.5rem 1.5rem;
+ border-radius: 5px;
 }
