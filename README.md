@@ -13,6 +13,7 @@ Meeting.rs is an online one-to-one video meeting application that utilizes WebRT
 - [Project status](#project-status)
 - [Contribution](#contribution)
 - [Contact](#contact)
+- [Community](#community)
 - [License](#license)
 </details>
 
@@ -66,6 +67,12 @@ Contributions to the project are welcome and encouraged!
 For further information or to discuss your specific requirements, please feel free to reach out to me:
 
 - Email: williamlsh@protonmail.com
+
+## Community
+
+For help, discussion about this project:
+
+[Join the Meeting.rs Discord Server](https://discord.gg/MKe32gPg)
 
 ## License
 
