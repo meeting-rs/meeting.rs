@@ -11,11 +11,11 @@ crate-type = ["cdylib"]
 [dependencies]
 console_error_panic_hook = "0.1"
 futures = "0.3"
-gloo-console = "0.2"
-gloo-dialogs = "0.1"
-gloo-events = "0.1"
-gloo-net = "0.3"
-gloo-utils = "0.1"
+gloo-console = "0.3"
+gloo-dialogs = "0.2"
+gloo-events = "0.2"
+gloo-net = "0.4"
+gloo-utils = "0.2"
 js-sys = "0.3"
 protocol = { version = "0.1", path = "../protocol" }
 serde = { version = "1.0", features = ["derive"] }
@@ -40,6 +40,8 @@ features = [
     "RtcConfiguration",
     "MediaDevices",
     "MediaStreamConstraints",
+    "MediaDeviceInfo",
+    "MediaDeviceKind",
     "DisplayMediaStreamConstraints",
     "MediaStream",
     "MediaStreamTrack",
