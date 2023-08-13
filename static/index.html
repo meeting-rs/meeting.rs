@@ -13,8 +13,8 @@
     <form id="passphrase-form">
       <h1>Enter your passphrase to create or join a meeting:</h1>
       <div class="tag">
-        <button type="button" class="mButton ripple" id="option-media">Video and audio sharing</button>
-        <button type="button" class="mButton ripple" id="option-screen">Screen sharing</button>
+        <button type="button" class="mButton ripple" id="option-media">Share video and audio</button>
+        <button type="button" class="mButton ripple" id="option-screen">Share screen</button>
       </div>
 
       <label for="passphrase" class="passphrase">Passphrase: <input type="text" id="passphrase"
@@ -29,13 +29,14 @@
     <div class="main col">
       <video class="video_play" id="remote-video" autoplay controls></video>
       <div class="controls">
-        <button  type="button"  id="mute-audio" data-status="active" class="btn mButton ripple bg size-big">
+        <button type="button" id="mute-audio" data-status="active" class="btn mButton ripple bg size-big">
           Mute Audio
         </button>
-        <button  type="button" id="mute-video" data-status="active" class="btn mButton ripple bg size-big">
+        <button type="button" id="mute-video" data-status="active" class="btn mButton ripple bg size-big">
           Mute Video
         </button>
-        <button onClick="confirmReturnHome()" type="button" class="mButton ripple warning size-big" id="return-home" data-status="active" >
+        <button onClick="confirmReturnHome()" type="button" class="mButton ripple warning size-big" id="return-home"
+          data-status="active">
           Exit
         </button>
       </div>
