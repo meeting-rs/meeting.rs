@@ -1,5 +1,5 @@
 peer:
-    @wasm-pack build --release --no-typescript -t web -d ../static/pkg peer
+    @wwasm-pack build --release --weak-refs --no-pack --no-typescript -t web -d ../static/pkg peer
 
 serve: peer
     @python3 -m http.server -d static
