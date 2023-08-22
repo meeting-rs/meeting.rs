@@ -9,6 +9,7 @@ use futures::{
 use gloo_console::log;
 use gloo_dialogs::alert;
 use gloo_net::websocket::{futures::WebSocket, Message};
+use gloo_utils::window;
 use js_sys::{Array, Error, Object, Reflect};
 use listener::{get_element_by_id, passphrase_listener};
 use protocol::{Event, IceCandidate, Role};
@@ -24,8 +25,7 @@ use web_sys::{
 pub async fn main() -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
-    let ws = WebSocket::open("ws://localhost:3000/websocket")
-        .map_err(|err| Error::new(&err.to_string()))?;
+    let ws = WebSocket::open(&ws_uri()?).map_err(|err| Error::new(&err.to_string()))?;
     log!("WebSocket Connected.");
     let (mut write, read) = ws.split();
 
@@ -211,4 +211,16 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
         rtc_configuration.ice_servers(&ice_servers);
         rtc_configuration
     })
+}
+
+fn ws_uri() -> Result<String, JsValue> {
+    let protocol = if window().location().protocol()?.eq("https:") {
+        "wss://"
+    } else {
+        "ws://"
+    };
+    Ok(format!(
+        "{protocol}{}/websocket",
+        window().location().host()?
+    ))
 }
