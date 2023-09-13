@@ -1,2 +1,8 @@
 [workspace]
 members = ["coordinator", "peer", "protocol"]
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
