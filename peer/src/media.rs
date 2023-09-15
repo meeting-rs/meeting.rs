@@ -84,7 +84,7 @@ async fn get_user_media(enable_video: bool, enable_audio: bool) -> Result<MediaS
 async fn get_display_media() -> Result<MediaStream, JsValue> {
     Ok(MediaStream::from(
         JsFuture::from(media_devices()?.get_display_media_with_constraints(
-            &DisplayMediaStreamConstraints::new().audio(&JsValue::from_bool(true)),
+            DisplayMediaStreamConstraints::new().audio(&JsValue::from_bool(true)),
         )?)
         .await?,
     ))
