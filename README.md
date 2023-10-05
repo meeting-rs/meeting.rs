@@ -68,12 +68,6 @@ For further information or to discuss your specific requirements, please feel fr
 
 - Email: williamlsh@protonmail.com
 
-## Community
-
-For help, discussion about this project:
-
-[Join the Meeting.rs Discord Server](https://discord.gg/WmpTGhV5JY)
-
 ## License
 
 GPL-3.0
