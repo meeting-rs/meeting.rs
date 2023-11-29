@@ -1,0 +1,3 @@
+# Ignore files not necessary for Shuttle build.
+/.github
+/README.md
