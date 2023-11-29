@@ -9,7 +9,7 @@ use std::{
 use tokio::sync::broadcast;
 
 #[derive(Debug)]
-pub(crate) struct DbHolder {
+pub struct DbHolder {
     db: Db,
 }
 
