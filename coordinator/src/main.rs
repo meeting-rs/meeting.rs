@@ -1,6 +1,6 @@
 mod db;
 
-use std::{net::SocketAddr, sync::Arc};
+use std::sync::Arc;
 
 use axum::{
     extract::{
@@ -16,7 +16,7 @@ use futures_util::{SinkExt, StreamExt};
 use protocol::{Event, Role};
 use tokio::sync::mpsc;
 use tower_http::services::ServeDir;
-use tracing::{debug, info, warn};
+use tracing::{debug, warn};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 struct AppState {
@@ -41,13 +41,9 @@ async fn main() {
         .route("/websocket", get(websocket_handler))
         .with_state(app_state.into());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .with_graceful_shutdown(shutdown_signal())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    debug!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
 }
 
 async fn websocket_handler(
@@ -200,12 +196,4 @@ async fn websocket(stream: WebSocket, state: Arc<AppState>) {
 
 fn channel_name(prefix: String, role: &Role) -> String {
     [prefix, role.to_string()].join(":")
-}
-
-/// Tokio signal handler that will wait for a user to press CTRL+C.
-async fn shutdown_signal() {
-    tokio::signal::ctrl_c()
-        .await
-        .expect("Expect shutdown signal handler");
-    info!("Signal shutdown");
 }
