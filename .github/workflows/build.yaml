@@ -4,8 +4,8 @@ on:
   pull_request:
   push:
     paths-ignore:
-      - ".github"
-      - "static"
+      - ".github/**"
+      - "static/**"
       - "justfile"
       - "README.md"
       - "Shuttle.toml"
