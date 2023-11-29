@@ -1,26 +1,16 @@
-# on: [workflow_dispatch, push, pull_request]
-on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    paths-ignore:
-      - ".github"
-      - "static"
-      - "justfile"
-      - "README.md"
-      - "Shuttle.toml"
-      - ".gitignore"
+name: Shuttle Deploy
 
-name: Build
+on:
+  push:
+    tags:
+      - "*-?v[0-9]+*"
+    branches:
+      - "shuttle-deploy" # For testing purpose on this branch.
+  workflow_dispatch:
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        rust-toolchain: [stable]
-      fail-fast: false
-    runs-on: ${{ matrix.os }}
+  deploy:
+    runs-on: ubuntu-latest
     steps:
       - uses: extractions/setup-just@v1
       - name: Checkout code
@@ -28,7 +18,7 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: ${{ matrix.rust-toolchain }}
+          toolchain: stable
           profile: minimal
           override: true
       - name: Install wasm-pack
@@ -37,5 +27,9 @@ jobs:
       - uses: rui314/setup-mold@v1
       - name: Cache build artifacts
         uses: Swatinem/rust-cache@v2
-      - name: Build code
-        run: just build
+      - name: Build peer
+        run: just peer
+      - uses: shuttle-hq/deploy-action@main
+        with:
+          deploy-key: ${{ secrets.SHUTTLE_DEPLOY_KEY }}
+          allow-dirty: "true"
