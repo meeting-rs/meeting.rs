@@ -1,0 +1,35 @@
+name: Shuttle Deploy
+
+on:
+  push:
+    tags:
+      - "*-?v[0-9]+*"
+    branches:
+      - "shuttle-deploy" # For testing purpose on this branch.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: extractions/setup-just@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - uses: rui314/setup-mold@v1
+      - name: Cache build artifacts
+        uses: Swatinem/rust-cache@v2
+      - name: Build peer
+        run: just peer
+      - uses: shuttle-hq/deploy-action@main
+        with:
+          deploy-key: ${{ secrets.SHUTTLE_DEPLOY_KEY }}
+          allow-dirty: "true"
