@@ -1712,9 +1712,9 @@ dependencies = [
 
 [[package]]
 name = "shuttle-axum"
-version = "0.35.0"
+version = "0.35.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d253b5bebca363010efe83d0f7419def44746d0bcac19d3cfa598aa98f4abeca"
+checksum = "7d28c8d9aeeeb00106b8b09115c589c127f1dbb596e1be76aceae0f0bc888fc3"
 dependencies = [
  "axum 0.7.2",
  "shuttle-runtime",
