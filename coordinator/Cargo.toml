@@ -45,6 +45,6 @@ optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-runtime]
-version = "0.35"
+version = "0.36"
 default-features = false
 optional = true
