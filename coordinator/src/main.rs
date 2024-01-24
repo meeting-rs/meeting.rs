@@ -20,7 +20,10 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     debug!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, route()).await.unwrap();
+    axum::serve(listener, route())
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap();
 }
 
 #[cfg(feature = "shuttle")]
@@ -34,4 +37,14 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .with(tracing_subscriber::fmt::layer())
         .init();
     Ok(route().into())
+}
+
+#[cfg(feature = "std")]
+async fn shutdown_signal() {
+    use tracing::info;
+
+    tokio::signal::ctrl_c()
+        .await
+        .expect("Expect shutdown signal handler");
+    info!("Shutdown...");
 }

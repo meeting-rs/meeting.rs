@@ -13,6 +13,7 @@ std = [
     "tokio/macros",
     "tokio/sync",
     "tokio/parking_lot",
+    "tokio/signal",
 ]
 shuttle = [
     "shuttle-axum",
@@ -38,13 +39,13 @@ optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-axum]
-version = "0.35"
+version = "0.37"
 default-features = false
 features = ["axum-0-7"]
 optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-runtime]
-version = "0.36"
+version = "0.37"
 default-features = false
 optional = true
