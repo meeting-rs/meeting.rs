@@ -40,8 +40,6 @@ optional = true
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-axum]
 version = "0.37"
-default-features = false
-features = ["axum-0-7"]
 optional = true
 
 # Feature `shuttle` depend on it.
