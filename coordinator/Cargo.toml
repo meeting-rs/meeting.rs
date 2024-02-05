@@ -33,7 +33,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # Both `std` and `shuttle` features depend on it but with different futures from it.
 [dependencies.tokio]
-version = "1.35"
+version = "1.36"
 default-features = false
 optional = true
 
