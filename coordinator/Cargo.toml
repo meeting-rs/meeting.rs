@@ -39,7 +39,7 @@ optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-axum]
-version = "0.39"
+version = "0.40"
 optional = true
 
 # Feature `shuttle` depend on it.
