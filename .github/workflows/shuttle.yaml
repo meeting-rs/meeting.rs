@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - "*-?v[0-9]+*"
-    branches:
-      - "shuttle" # For testing purpose on this branch.
   workflow_dispatch:
 
 jobs:
@@ -15,8 +13,6 @@ jobs:
       - uses: extractions/setup-just@v1
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ref: shuttle
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
