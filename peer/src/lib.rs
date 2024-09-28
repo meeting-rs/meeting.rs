@@ -68,8 +68,8 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
                             .as_string()
                             .unwrap();
 
-                        let mut offer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Offer);
-                        offer_obj.sdp(&offer_sdp);
+                        let offer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Offer);
+                        offer_obj.set_sdp(&offer_sdp);
                         let sld_promise = pc.set_local_description(&offer_obj);
                         JsFuture::from(sld_promise).await.unwrap();
                         log!("pc: state:", pc.signaling_state());
@@ -82,8 +82,8 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
                 }
                 Event::Offer(offer) => {
                     log!("received offer");
-                    let mut offer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Offer);
-                    offer_obj.sdp(&offer);
+                    let offer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Offer);
+                    offer_obj.set_sdp(&offer);
                     let srd_promise = pc.set_remote_description(&offer_obj);
                     JsFuture::from(srd_promise).await.unwrap();
                     log!("pc: state:", pc.signaling_state());
@@ -94,8 +94,8 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
                         .as_string()
                         .unwrap();
 
-                    let mut answer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Answer);
-                    answer_obj.sdp(&answer_sdp);
+                    let answer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Answer);
+                    answer_obj.set_sdp(&answer_sdp);
                     let sld_promise = pc.set_local_description(&answer_obj);
                     JsFuture::from(sld_promise).await.unwrap();
                     log!("pc: state:", pc.signaling_state());
@@ -107,8 +107,8 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
                 }
                 Event::Answer(answer) => {
                     log!("received answer");
-                    let mut answer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Answer);
-                    answer_obj.sdp(&answer);
+                    let answer_obj = RtcSessionDescriptionInit::new(RtcSdpType::Answer);
+                    answer_obj.set_sdp(&answer);
                     let srd_promise = pc.set_remote_description(&answer_obj);
                     JsFuture::from(srd_promise).await.unwrap();
                     log!("pc: state:", pc.signaling_state());
@@ -116,10 +116,10 @@ fn handle_events(pc: RtcPeerConnection, mut tx: Sender<String>, mut read: SplitS
                 Event::IceCandidate(candidate) => {
                     log!("received a candidate.");
                     let candidate = RtcIceCandidate::new(&{
-                        let mut rtc_candidate = RtcIceCandidateInit::new("");
-                        rtc_candidate.candidate(&candidate.candidate);
-                        rtc_candidate.sdp_m_line_index(candidate.sdp_m_line_index);
-                        rtc_candidate.sdp_mid(candidate.sdp_mid.as_deref());
+                        let rtc_candidate = RtcIceCandidateInit::new("");
+                        rtc_candidate.set_candidate(&candidate.candidate);
+                        rtc_candidate.set_sdp_m_line_index(candidate.sdp_m_line_index);
+                        rtc_candidate.set_sdp_mid(candidate.sdp_mid.as_deref());
                         rtc_candidate
                     })
                     .unwrap();
@@ -207,8 +207,8 @@ fn peer_connection() -> Result<RtcPeerConnection, JsValue> {
         )?;
         ice_servers.push(&server_entry);
 
-        let mut rtc_configuration = RtcConfiguration::new();
-        rtc_configuration.ice_servers(&ice_servers);
+        let rtc_configuration = RtcConfiguration::new();
+        rtc_configuration.set_ice_servers(&ice_servers);
         rtc_configuration
     })
 }

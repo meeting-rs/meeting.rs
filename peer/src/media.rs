@@ -70,22 +70,23 @@ async fn handle_local_stream(
 
 async fn get_user_media(enable_video: bool, enable_audio: bool) -> Result<MediaStream, JsValue> {
     Ok(MediaStream::from(
-        JsFuture::from(
-            media_devices()?.get_user_media_with_constraints(
-                MediaStreamConstraints::new()
-                    .video(&JsValue::from_bool(enable_video))
-                    .audio(&JsValue::from_bool(enable_audio)),
-            )?,
-        )
+        JsFuture::from(media_devices()?.get_user_media_with_constraints(&{
+            let media_stream_constraints = MediaStreamConstraints::new();
+            media_stream_constraints.set_video(&JsValue::from_bool(enable_video));
+            media_stream_constraints.set_audio(&JsValue::from_bool(enable_audio));
+            media_stream_constraints
+        })?)
         .await?,
     ))
 }
 
 async fn get_display_media() -> Result<MediaStream, JsValue> {
     Ok(MediaStream::from(
-        JsFuture::from(media_devices()?.get_display_media_with_constraints(
-            DisplayMediaStreamConstraints::new().audio(&JsValue::from_bool(true)),
-        )?)
+        JsFuture::from(media_devices()?.get_display_media_with_constraints(&{
+            let display_media_stream_constraints = DisplayMediaStreamConstraints::new();
+            display_media_stream_constraints.set_audio(&JsValue::from_bool(true));
+            display_media_stream_constraints
+        })?)
         .await?,
     ))
 }

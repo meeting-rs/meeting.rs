@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["shuttle"]
+default = ["std"]
 std = [
     "tokio/rt-multi-thread",
     "tokio/net",
@@ -27,7 +27,7 @@ axum = { version = "0.7", features = ["ws"] }
 futures-util = "0.3"
 protocol = { version = "0.1", path = "../protocol" }
 serde_json = "1.0"
-tower-http = { version = "0.5", features = ["fs"] }
+tower-http = { version = "0.6", features = ["fs"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
@@ -39,11 +39,11 @@ optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-axum]
-version = "0.45"
+version = "0.47"
 optional = true
 
 # Feature `shuttle` depend on it.
 [dependencies.shuttle-runtime]
-version = "0.45"
+version = "0.47"
 default-features = false
 optional = true
