@@ -5,7 +5,7 @@ serve: peer
     @python3 -m http.server -d static
 
 coordinator: peer
-    @cargo run -r -p coordinator --no-default-features -F std
+    @cargo run -r -p coordinator
 
 build: peer
-    @cargo build -r -p coordinator --no-default-features -F std
+    @cargo build -r -p coordinator
